@@ -138,3 +138,11 @@ ID too (each person should really use their own, not share one).
   is an approximation, most noticeably for AniList's 3-point smiley scale.
 - Be reasonable with request volume against both APIs — this is a
   personal-use tool, not a bulk scraper.
+
+
+## Future Implementations
+
+- Show the anime list of one person
+- Show anime information when highlighted / Add hyperlink to MAL/AniList site
+- add category filtering (genre, tags)
+- potentially add a minigame (based on mutual anime list)
