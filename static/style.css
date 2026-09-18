@@ -1,0 +1,33 @@
+:root {
+    --bg: #14171c; --panel: #1e232b; --border: #2c333d;
+    --text: #e6e9ee; --muted: #93a0b2;
+    --accent: #2e51a2; --accent2: #4c7bd9;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 24px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  h2 { font-size: 15px; color: var(--muted); margin: 0 0 10px; }
+  p.sub { color: var(--muted); margin-top: 0; font-size: 14px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
+  input[type=text], select { background: #10131a; border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 14px; }
+  button { background: var(--accent); color: white; border: none; padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  button:hover { background: var(--accent2); }
+  button:disabled { background: #3a4150; cursor: not-allowed; }
+  button.secondary { background: #10131a; border: 1px solid var(--border); }
+  button.secondary:hover { background: #2c333d; }
+  .row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: .03em; }
+  .badge.mal { background: #2e51a2; }
+  .badge.anilist { background: #7b57c9; }
+  .local-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .local-row { display: flex; align-items: center; gap: 10px; background: #10131a; border: 1px solid var(--border); padding: 8px 10px; border-radius: 6px; flex-wrap: wrap; }
+  .local-row .meta { color: var(--muted); font-size: 12px; }
+  .local-row .grow { flex: 1; }
+  .status { font-size: 13px; }
+  .status.err { color: #e2685c; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; }
+  th:hover { color: var(--text); }
+  .empty { color: var(--muted); font-style: italic; padding: 10px 0; }

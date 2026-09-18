@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>List Compare</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>List Compare</h1>
+<p class="sub">Fetch public anime/manga lists from MyAnimeList or AniList, cache them locally, and compare across users.</p>
+
+<div class="panel">
+  <h2>Fetch a list</h2>
+  <div class="row">
+    <div>
+      <label for="source">Source</label>
+      <select id="source">
+        <option value="mal">MyAnimeList</option>
+        <option value="anilist">AniList</option>
+      </select>
+    </div>
+    <div>
+      <label for="mediaType">Type</label>
+      <select id="mediaType">
+        <option value="anime">Anime</option>
+        <option value="manga">Manga</option>
+      </select>
+    </div>
+    <div>
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="e.g. VyTrinh">
+    </div>
+    <button id="fetchBtn">Fetch</button>
+    <span id="fetchStatus" class="status"></span>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Local files <span class="meta" style="color: var(--muted); font-weight: normal;">(cached on disk in <code>data/</code> -- no network call needed to reuse these)</span></h2>
+  <div class="local-list" id="localList"></div>
+</div>
+
+<div class="panel">
+  <div class="row">
+    <button id="compareBtn" disabled>Compare selected</button>
+    <span id="compareHint" style="color: var(--muted); font-size: 13px;">Select at least 2 users above.</span>
+  </div>
+  <div id="resultsWrap"></div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
