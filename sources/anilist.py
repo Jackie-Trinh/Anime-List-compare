@@ -15,12 +15,17 @@ sources/mal.py):
                             for the rare entry with no known MAL match --
                             which correctly won't match anything, rather
                             than risking a wrong guess.
+    "mal_id":      str or None  -- same value as match_id when known, kept
+                            as its own field for clarity when requesting details.
+    "anilist_id":  str  -- AniList's own native id, always known for an
+                            AniList-sourced entry.
     "title":       str
     "score":       float (0-10 scale, 0 = unscored)
     "status":      str  -- normalized status code, see sources/common.py
     "status_label" str  -- human-readable label
 }
 """
+import re
 
 import requests
 
@@ -111,9 +116,13 @@ def fetch_anilist_list(username, media_type):
             media = entry["media"]
             title = media["title"]["english"] or media["title"]["romaji"]
             code = status_map.get(entry["status"], "unknown")
+            mal_id = str(media["idMal"]) if media.get("idMal") else None
+            anilist_id = str(media["id"])
             match_id = str(media["idMal"]) if media.get("idMal") else f"anilist-only-{media['id']}"
             items.append({
                 "match_id": match_id,
+                "mal_id": mal_id,
+                "anilist_id": anilist_id,
                 "title": title,
                 "score": _normalize_score(entry["score"], score_format),
                 "status": code,
@@ -121,3 +130,67 @@ def fetch_anilist_list(username, media_type):
             })
 
     return items
+
+
+_DETAILS_QUERY = """
+query ($id: Int, $idMal: Int, $type: MediaType) {
+  Media(id: $id, idMal: $idMal, type: $type) {
+    id
+    idMal
+    title { romaji english }
+    averageScore
+    description(asHtml: false)
+    genres
+    siteUrl
+  }
+}
+"""
+
+
+def _clean_description(text):
+    """AniList descriptions can still contain a few raw <br> tags even with
+    asHtml:false; strip those and any other stray markup."""
+    text = re.sub(r"<br\s*/?>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    return text.strip()
+
+
+def fetch_anilist_details(media_type, anilist_id=None, mal_id=None):
+    """
+    Fetch info about a single anime/manga by either its native AniList id
+    or its MAL id (AniList's `idMal` filter looks it up either way -- this
+    is what lets a MAL-sourced list item show AniList info too, without
+    ever having stored a native AniList id for it).
+    """
+    if not anilist_id and not mal_id:
+        raise ValueError("Need an AniList id or a MAL id.")
+
+    variables = {"type": media_type.upper()}
+    if anilist_id:
+        variables["id"] = int(anilist_id)
+    if mal_id:
+        variables["idMal"] = int(mal_id)
+
+    resp = requests.post(
+        ANILIST_API,
+        json={"query": _DETAILS_QUERY, "variables": variables},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    payload = resp.json()
+    if payload.get("errors"):
+        raise ValueError(payload["errors"][0].get("message", "Unknown AniList error"))
+
+    media = payload["data"]["Media"]
+    if media is None:
+        raise ValueError("Not found on AniList.")
+
+    return {
+        "anilist_id": media["id"],
+        "mal_id": media.get("idMal"),
+        "title": media["title"]["english"] or media["title"]["romaji"],
+        "score": media.get("averageScore"),  # 0-100 scale -- AniList's own native format
+        "description": _clean_description(media.get("description") or ""),
+        "genres": media.get("genres", []),
+        "url": media.get("siteUrl"),
+    }

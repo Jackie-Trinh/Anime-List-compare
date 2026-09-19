@@ -7,6 +7,9 @@ Flask backend. Serves the UI and exposes a small JSON API:
   GET    /api/fetch?source=&username=&type= -> fetch fresh from the network,
                                                  save/overwrite the local cache file
   DELETE /api/local?source=&username=&type= -> remove a cached file
+  GET    /api/details?type=&mal_id=&anilist_id= -> one title's info from
+                                                       both sites (for the
+                                                       click-to-see-details popup)
 
 Run directly for browser use:   python app.py
 Run as a desktop window:        python desktop.py
@@ -20,7 +23,7 @@ from datetime import datetime, timezone
 
 from flask import Flask, jsonify, request, render_template
 
-from sources import fetch_list, MAL_CLIENT_ID
+from sources import fetch_list, fetch_details, MAL_CLIENT_ID
 
 
 def get_base_path():
@@ -137,6 +140,26 @@ def api_local_delete():
         os.remove(path)
         return jsonify({"deleted": True})
     return jsonify({"deleted": False}), 404
+
+
+@app.route("/api/details")
+def api_details():
+    """One title's info from both sites, for the click-a-title popup."""
+    media_type = request.args.get("type", "anime")
+    mal_id = request.args.get("mal_id") or None
+    anilist_id = request.args.get("anilist_id") or None
+
+    if not mal_id and not anilist_id:
+        return jsonify({"error": "Need a MAL id or an AniList id."}), 400
+
+    try:
+        details = fetch_details(media_type, mal_id=mal_id, anilist_id=anilist_id)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": f"Request failed: {e}"}), 502
+
+    return jsonify(details)
 
 
 if __name__ == "__main__":
