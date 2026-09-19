@@ -43,10 +43,18 @@
 
 <div class="panel">
   <div class="row">
+    <button id="viewBtn" disabled>View list</button>
     <button id="compareBtn" disabled>Compare selected</button>
-    <span id="compareHint" style="color: var(--muted); font-size: 13px;">Select at least 2 users above.</span>
+    <span id="compareHint" style="color: var(--muted); font-size: 13px;">Select at least 2 users above to compare, or exactly 1 to view its full list.</span>
   </div>
   <div id="resultsWrap"></div>
+</div>
+
+<div id="detailModal" class="modal-overlay hidden">
+  <div class="modal">
+    <button id="modalClose" class="modal-close" aria-label="Close">&times;</button>
+    <div id="modalBody">Loading…</div>
+  </div>
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
