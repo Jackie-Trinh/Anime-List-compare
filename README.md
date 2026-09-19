@@ -142,7 +142,5 @@ ID too (each person should really use their own, not share one).
 
 ## Future Implementations
 
-- Show the anime list of one person
-- Show anime information when highlighted / Add hyperlink to MAL/AniList site
 - add category filtering (genre, tags)
 - potentially add a minigame (based on mutual anime list)
